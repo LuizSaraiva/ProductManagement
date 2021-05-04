@@ -5,12 +5,38 @@
     android:layout_height="match_parent"
     tools:context=".FragmentEntry">
 
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:gravity="center"
-        android:text="TESTE"
-        android:textSize="30sp" />
+        android:layout_height="match_parent">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <EditText
+                android:id="@+id/entry_codprod"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Product:"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/entry_qtde"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:hint="Quantity:" />
+
+            <Button
+                android:id="@+id/btnEntry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="OK" />
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>
