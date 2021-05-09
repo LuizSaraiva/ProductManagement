@@ -39,17 +39,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         mockProduct.forEach { product ->
-            ApplicationApp.instance.helper?.insertProduct(product)
+            var search = ApplicationApp.instance.helper?.findProduct(product.codprod)
+            if(search == null){
+                ApplicationApp.instance.helper?.insertProduct(product)
+            }
         }
-
-
     }
 
     private fun initComponents() {
         nav = findViewById(R.id.nav)
         toolbar = findViewById(R.id.toolbar)
         drawer = findViewById(R.id.drawer_main)
-    }
+         }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -69,8 +70,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     val mockProduct = arrayListOf<Product>(
         Product(1, "MACA"),
-        Product(1, "CHOCOLATE"),
-        Product(1, "BANANA")
+        Product(2, "CHOCOLATE"),
+        Product(3, "BANANA")
     )
 
 

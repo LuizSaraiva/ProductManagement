@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import com.project.productmanagement.model.Product
+import java.sql.SQLException
 
 class DBHelper(context: Context) : SQLiteOpenHelper(
     context,
@@ -15,7 +16,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
 ) {
 
     companion object {
-        val VERSION: Int = 3
+        val VERSION: Int = 4
         val DB_NAME = "produts_management.db"
 
         val TABLE_PRODUCTS_NAME = "products"
@@ -25,8 +26,8 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
 
     val TABLE_PRODUTCS_CREATE = "" +
             "CREATE TABLE IF NOT EXISTS $TABLE_PRODUCTS_NAME (" +
-            "CODPROD INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-            "NAME TEXT NOT NULL)"
+            "$COLLUM_CODPROD INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+            "$COLLUM_NAME_PROD TEXT NOT NULL)"
 
     val TABLE_PRODUTS_DROP = "DROP TABLE IF EXISTS $TABLE_PRODUCTS_NAME"
 
@@ -36,13 +37,13 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        if(oldVersion != newVersion){
+        if (oldVersion != newVersion) {
             db?.execSQL(TABLE_PRODUTS_DROP)
         }
         onCreate(db)
     }
 
-     fun insertProduct(product: Product) {
+    fun insertProduct(product: Product) {
         var db = writableDatabase
 
         var content = ContentValues()
@@ -52,4 +53,35 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
         db.close()
     }
 
+    fun findProduct(idProduct: Int): List<Product> {
+        var db = readableDatabase
+
+        var listProducts = mutableListOf<Product>()
+        var where = "$COLLUM_CODPROD = ?"
+        var args = arrayOf("$idProduct")
+
+        try {
+
+            var cursor =
+                db.query(TABLE_PRODUCTS_NAME, null,where, args, null, null, null)
+            if (cursor == null) {
+                db.close()
+                return mutableListOf()
+            }
+            while (cursor.moveToNext()) {
+                var product = Product(
+                    cursor.getInt(cursor.getColumnIndex(COLLUM_CODPROD)),
+                    cursor.getString(cursor.getColumnIndex(COLLUM_NAME_PROD))
+                )
+                listProducts.add(product)
+            }
+        } catch (ex: SQLException) {
+            ex.printStackTrace()
+        }
+
+        finally {
+            db.close()
+        }
+        return listProducts
+    }
 }
