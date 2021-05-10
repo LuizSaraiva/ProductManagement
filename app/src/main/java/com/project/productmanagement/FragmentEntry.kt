@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.project.productmanagement.model.Stock
 
 class FragmentEntry: Fragment() {
 
@@ -25,6 +26,14 @@ class FragmentEntry: Fragment() {
         initComponents(view)
 
         btnEntry.setOnClickListener {
+
+            val codprodInsert:Int = Integer.parseInt(codprod.text.toString())
+            val qtdeInsert:Double = qtde.text.toString().toDouble()
+            val dateInsert = "10/06/2021"
+
+            var stock:Stock = Stock(codprodInsert,qtdeInsert,dateInsert,0.0)
+            ApplicationApp.instance.helper?.insertStock(stock)
+
             var intent = Intent(view.context, MainActivity::class.java)
             startActivity(intent)
         }

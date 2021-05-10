@@ -40,7 +40,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         mockProduct.forEach { product ->
             var search = ApplicationApp.instance.helper?.findProduct(product.codprod)
-            if(search == null){
+            println(search)
+            if(search?.size == 0){
                 ApplicationApp.instance.helper?.insertProduct(product)
             }
         }
@@ -73,6 +74,4 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Product(2, "CHOCOLATE"),
         Product(3, "BANANA")
     )
-
-
 }

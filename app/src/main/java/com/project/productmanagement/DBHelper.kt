@@ -2,10 +2,12 @@ package com.project.productmanagement
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import com.project.productmanagement.model.Product
+import com.project.productmanagement.model.Stock
 import java.sql.SQLException
 
 class DBHelper(context: Context) : SQLiteOpenHelper(
@@ -17,28 +19,56 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
 
     companion object {
         val VERSION: Int = 4
-        val DB_NAME = "produts_management.db"
+        val DB_NAME = "products_management.db"
+        val DB_PRAGMA_FOREIGN_KEY = "PRAGMA FOREIGN_KEYS = ON;"
 
+        //TABLES
         val TABLE_PRODUCTS_NAME = "products"
+        val TABLE_STOCK_NAME = "stock"
+
+        //COLLUM
         val COLLUM_CODPROD = "codprod"
         val COLLUM_NAME_PROD = "name"
+        val COLLUM_QTDE = "qtde"
+        val COLLUM_DATE = "date"
     }
 
+    //CREATE
     val TABLE_PRODUTCS_CREATE = "" +
             "CREATE TABLE IF NOT EXISTS $TABLE_PRODUCTS_NAME (" +
             "$COLLUM_CODPROD INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
             "$COLLUM_NAME_PROD TEXT NOT NULL)"
 
+    val TABLE_STOCK_CREATE = "" +
+            "CREATE TABLE IF NOT EXISTS $TABLE_STOCK_NAME (" +
+            "ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+            "$COLLUM_CODPROD INTEGER NOT NULL UNIQUE," +
+            "$COLLUM_QTDE REAL NOT NULL DEFAULT 0," +
+            "$COLLUM_DATE TEXT NOT NULL," +
+            "FOREIGN KEY ($COLLUM_CODPROD) REFERENCES $TABLE_PRODUCTS_NAME($COLLUM_CODPROD)" +
+            ")"
+
+    //DROP
     val TABLE_PRODUTS_DROP = "DROP TABLE IF EXISTS $TABLE_PRODUCTS_NAME"
+    val TABLE_STOCK_DROP = "DROP TABLE IF EXISTS $TABLE_STOCK_NAME"
+
+    override fun onOpen(db: SQLiteDatabase?) {
+        super.onOpen(db)
+        db?.execSQL(DB_PRAGMA_FOREIGN_KEY)
+    }
+
 
     override fun onCreate(db: SQLiteDatabase?) {
-        Log.i("CREATEDTABLE", TABLE_PRODUCTS_NAME)
         db?.execSQL(TABLE_PRODUTCS_CREATE)
+        db?.execSQL(TABLE_STOCK_CREATE)
     }
+
+
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         if (oldVersion != newVersion) {
             db?.execSQL(TABLE_PRODUTS_DROP)
+            db?.execSQL(TABLE_STOCK_DROP)
         }
         onCreate(db)
     }
@@ -46,11 +76,18 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
     fun insertProduct(product: Product) {
         var db = writableDatabase
 
-        var content = ContentValues()
-        content.put(COLLUM_CODPROD, product.codprod)
-        content.put(COLLUM_NAME_PROD, product.name)
-        db.insert(TABLE_PRODUCTS_NAME, null, content)
-        db.close()
+        try {
+            var content = ContentValues()
+            content.put(COLLUM_CODPROD, product.codprod)
+            content.put(COLLUM_NAME_PROD, product.name)
+            db.insert(TABLE_PRODUCTS_NAME, null, content)
+        }catch (ex: SQLException){
+            ex.printStackTrace()
+        }catch (ex: SQLiteConstraintException){
+            ex.printStackTrace()
+        }finally {
+            db.close()
+        }
     }
 
     fun findProduct(idProduct: Int): List<Product> {
@@ -84,4 +121,25 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
         }
         return listProducts
     }
+
+    fun insertStock(stock: Stock){
+        var db = writableDatabase
+
+        try{
+            var content = ContentValues()
+            content.put(COLLUM_CODPROD, stock.codprod)
+            content.put(COLLUM_QTDE, stock.qtde)
+            content.put(COLLUM_DATE, stock.date)
+            db.insert(TABLE_STOCK_NAME,null, content)
+        }catch (ex: SQLException){
+            ex.printStackTrace()
+        }catch (ex: SQLiteConstraintException){
+            ex.printStackTrace()
+        }
+        finally {
+            db.close()
+        }
+    }
+
+
 }
