@@ -18,7 +18,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
 ) {
 
     companion object {
-        val VERSION: Int = 4
+        val VERSION: Int = 6
         val DB_NAME = "products_management.db"
         val DB_PRAGMA_FOREIGN_KEY = "PRAGMA FOREIGN_KEYS = ON;"
 
@@ -130,7 +130,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
             content.put(COLLUM_CODPROD, stock.codprod)
             content.put(COLLUM_QTDE, stock.qtde)
             content.put(COLLUM_DATE, stock.date)
-            db.insert(TABLE_STOCK_NAME,null, content)
+            db.insertOrThrow(TABLE_STOCK_NAME,null, content)
         }catch (ex: SQLException){
             ex.printStackTrace()
         }catch (ex: SQLiteConstraintException){
@@ -141,5 +141,34 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
         }
     }
 
+    fun findStock(codprod:Int) : List<Stock>{
+        val db = readableDatabase
 
+        val listStock = mutableListOf<Stock>()
+        val where = "$COLLUM_CODPROD = ?"
+        val args = arrayOf("$codprod")
+
+        try {
+            val cursor = db.query(TABLE_STOCK_NAME,null,where, args,null, null,null)
+
+            if(cursor == null){
+                db.close()
+                return mutableListOf()
+            }
+            while (cursor.moveToNext()){
+
+                var stock = Stock(
+                    cursor.getInt(cursor.getColumnIndex(COLLUM_CODPROD)),
+                    cursor.getDouble(cursor.getColumnIndex(COLLUM_QTDE)),
+                    cursor.getString(cursor.getColumnIndex(COLLUM_DATE)),
+                    0.0
+                )
+                listStock.add(stock)
+            }
+
+        }catch (ex: Exception){
+            ex.printStackTrace()
+        }
+        return listStock
+    }
 }
