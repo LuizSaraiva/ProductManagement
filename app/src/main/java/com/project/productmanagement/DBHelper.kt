@@ -18,7 +18,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
 ) {
 
     companion object {
-        val VERSION: Int = 6
+        val VERSION: Int = 8
         val DB_NAME = "products_management.db"
         val DB_PRAGMA_FOREIGN_KEY = "PRAGMA FOREIGN_KEYS = ON;"
 
@@ -52,18 +52,16 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
     val TABLE_PRODUTS_DROP = "DROP TABLE IF EXISTS $TABLE_PRODUCTS_NAME"
     val TABLE_STOCK_DROP = "DROP TABLE IF EXISTS $TABLE_STOCK_NAME"
 
-    override fun onOpen(db: SQLiteDatabase?) {
-        super.onOpen(db)
-        db?.execSQL(DB_PRAGMA_FOREIGN_KEY)
-    }
-
 
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(TABLE_PRODUTCS_CREATE)
         db?.execSQL(TABLE_STOCK_CREATE)
     }
 
-
+    override fun onOpen(db: SQLiteDatabase?) {
+        super.onOpen(db)
+        db?.execSQL(DB_PRAGMA_FOREIGN_KEY)
+    }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         if (oldVersion != newVersion) {
