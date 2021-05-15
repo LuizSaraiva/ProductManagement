@@ -5,7 +5,6 @@ import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 import com.project.productmanagement.model.Product
 import com.project.productmanagement.model.Stock
 import java.sql.SQLException
@@ -18,7 +17,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
 ) {
 
     companion object {
-        val VERSION: Int = 9
+        val VERSION: Int = 11
         val DB_NAME = "products_management.db"
         val DB_PRAGMA_FOREIGN_KEY = "PRAGMA FOREIGN_KEYS = ON;"
 
@@ -30,6 +29,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
         //TRIGGERS NAME
         val TRG_MOV_INSERT_NAME = "TRG_LOGMOV_INSERT"
         val TRG_MOV_UPDATE_NAME = "TRG_LOGMOV_UPDATE"
+        val TRG_INSERT_STOCK = "TRG_INSERT_STOCK"
 
         //COLLUM
         val COLLUM_CODPROD = "codprod"
@@ -71,7 +71,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
     val TABLE_LOGMOV_DROP = "DROP TABLE IF EXISTS $TABLE_LOGMOV_NAME"
 
     //TRIGGER
-    val TRG_LOGMOV_INSERT = "" +
+    val TRG_LOGMOV_INSERT_CREATE = "" +
             "CREATE TRIGGER IF NOT EXISTS $TRG_MOV_INSERT_NAME " +
             "AFTER INSERT ON $TABLE_STOCK_NAME " +
             "" +
@@ -91,7 +91,24 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
             ");" +
             "END;"
 
-    val TRG_LOGMOV_UPDATE = "" +
+    val TRG_INSERT_STOCK_CREATE = "" +
+            "CREATE TRIGGER IF NOT EXISTS $TRG_INSERT_STOCK " +
+            "AFTER INSERT ON $TABLE_PRODUCTS_NAME " +
+            "" +
+            "BEGIN " +
+            "INSERT INTO $TABLE_STOCK_NAME (" +
+            "$COLLUM_CODPROD," +
+            "$COLLUM_QTDE," +
+            "$COLLUM_DATE" +
+            ") VALUES (" +
+            "NEW.$COLLUM_CODPROD," +
+            "0," +
+            "DATETIME('NOW')" +
+            ");" +
+            "END;"
+
+
+    val TRG_LOGMOV_UPDATE_CREATE = "" +
             "CREATE TRIGGER IF NOT EXISTS $TRG_MOV_UPDATE_NAME " +
             "BEFORE UPDATE ON $TABLE_STOCK_NAME " +
             "" +
@@ -121,8 +138,9 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
     override fun onOpen(db: SQLiteDatabase?) {
         super.onOpen(db)
         db?.execSQL(DB_PRAGMA_FOREIGN_KEY)
-        db?.execSQL(TRG_LOGMOV_INSERT)
-        db?.execSQL(TRG_LOGMOV_UPDATE)
+        db?.execSQL(TRG_LOGMOV_INSERT_CREATE)
+        db?.execSQL(TRG_LOGMOV_UPDATE_CREATE)
+        db?.execSQL(TRG_INSERT_STOCK_CREATE)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -142,11 +160,11 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
             content.put(COLLUM_CODPROD, product.codprod)
             content.put(COLLUM_NAME_PROD, product.name)
             db.insert(TABLE_PRODUCTS_NAME, null, content)
-        }catch (ex: SQLException){
+        } catch (ex: SQLException) {
             ex.printStackTrace()
-        }catch (ex: SQLiteConstraintException){
+        } catch (ex: SQLiteConstraintException) {
             ex.printStackTrace()
-        }finally {
+        } finally {
             db.close()
         }
     }
@@ -161,7 +179,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
         try {
 
             var cursor =
-                db.query(TABLE_PRODUCTS_NAME, null,where, args, null, null, null)
+                db.query(TABLE_PRODUCTS_NAME, null, where, args, null, null, null)
             if (cursor == null) {
                 db.close()
                 return mutableListOf()
@@ -175,48 +193,37 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
             }
         } catch (ex: SQLException) {
             ex.printStackTrace()
-        }
-
-        finally {
+        } finally {
             db.close()
         }
         return listProducts
     }
 
-    fun insertStock(stock: Stock){
-        var db = writableDatabase
-
-        try{
-            var content = ContentValues()
-            content.put(COLLUM_CODPROD, stock.codprod)
-            content.put(COLLUM_QTDE, stock.qtde)
-            content.put(COLLUM_DATE, stock.date)
-            db.insertOrThrow(TABLE_STOCK_NAME,null, content)
-        }catch (ex: SQLException){
-            ex.printStackTrace()
-        }catch (ex: SQLiteConstraintException){
-            ex.printStackTrace()
-        }
-        finally {
-            db.close()
-        }
-    }
-
-    fun findStock(codprod:Int) : List<Stock>{
+    fun findStock(codprod: Int? = null, findId: Boolean = false): List<Stock> {
         val db = readableDatabase
 
         val listStock = mutableListOf<Stock>()
-        val where = "$COLLUM_CODPROD = ?"
-        val args = arrayOf("$codprod")
+        var where: String? = null
+        var args: Array<String> = arrayOf()
+
+        val query: String
+
+        if (findId) {
+            query = "SELECT * FROM $TABLE_STOCK_NAME WHERE $COLLUM_CODPROD = ?"
+            args = arrayOf("$codprod")
+        } else {
+            query = "SELECT * FROM $TABLE_STOCK_NAME"
+        }
 
         try {
-            val cursor = db.query(TABLE_STOCK_NAME,null,where, args,null, null,null)
 
-            if(cursor == null){
+            val cursor = db.rawQuery(query, args, null)
+
+            if (cursor == null) {
                 db.close()
                 return mutableListOf()
             }
-            while (cursor.moveToNext()){
+            while (cursor.moveToNext()) {
 
                 var stock = Stock(
                     cursor.getInt(cursor.getColumnIndex(COLLUM_CODPROD)),
@@ -227,13 +234,13 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
                 listStock.add(stock)
             }
 
-        }catch (ex: Exception){
+        } catch (ex: Exception) {
             ex.printStackTrace()
         }
         return listStock
     }
 
-    fun updateStock(stock: Stock){
+    fun updateStock(stock: Stock) {
 
         val itemStock = findStock(stock.codprod)
         val stockBef = itemStock[0].qtde
@@ -245,13 +252,12 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
 
         try {
             val content = ContentValues()
-            content.put(COLLUM_QTDE,stockNew)
-            content.put(COLLUM_DATE,stock.date)
-            db.update(TABLE_STOCK_NAME,content,where,args)
-        }catch (ex: Exception){
+            content.put(COLLUM_QTDE, stockNew)
+            content.put(COLLUM_DATE, stock.date)
+            db.update(TABLE_STOCK_NAME, content, where, args)
+        } catch (ex: Exception) {
             ex.printStackTrace()
-        }
-        finally {
+        } finally {
             db.close()
         }
     }
