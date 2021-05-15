@@ -10,6 +10,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.navigation.NavigationView
 import com.project.productmanagement.model.Product
+import com.project.productmanagement.view.FragmentEntry
+import com.project.productmanagement.view.FragmentProductExtract
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -19,6 +21,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var toolbar: Toolbar
 
     lateinit var fragEntry: FragmentEntry
+    lateinit var fragProductExtract: FragmentProductExtract
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +66,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit()
             }
+            R.id.item_product_extract ->{
+                fragProductExtract = FragmentProductExtract()
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.frame, fragProductExtract)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .commit()
+            }
         }
         drawer.closeDrawer(GravityCompat.START)
         return true
@@ -72,6 +83,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     val mockProduct = arrayListOf<Product>(
         Product(1, "MACA"),
         Product(2, "CHOCOLATE"),
-        Product(3, "BANANA")
+        Product(3, "BANANA"),
+        Product(4, "SUCO")
     )
 }

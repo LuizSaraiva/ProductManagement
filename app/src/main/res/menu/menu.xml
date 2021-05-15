@@ -4,4 +4,9 @@
     <item
         android:id="@+id/item_entry"
         android:title="Entry" />
+
+    <item
+        android:id="@+id/item_product_extract"
+        android:title="Product extract"/>
+
 </menu>

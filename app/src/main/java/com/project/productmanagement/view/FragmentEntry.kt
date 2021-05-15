@@ -1,4 +1,4 @@
-package com.project.productmanagement
+package com.project.productmanagement.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +9,9 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.google.android.material.snackbar.Snackbar
+import com.project.productmanagement.ApplicationApp
+import com.project.productmanagement.MainActivity
+import com.project.productmanagement.R
 import com.project.productmanagement.model.Stock
 import java.text.SimpleDateFormat
 import java.util.*
@@ -41,14 +43,15 @@ class FragmentEntry : Fragment() {
 
             var stock: Stock = Stock(codprodInsert, qtdeInsert, dateInsert, 0.0)
 
-            var search = ApplicationApp.instance.helper?.findStock(stock.codprod)
 
-            if (search?.size == 0) {
-                ApplicationApp.instance.helper?.insertStock(stock)
-                Toast.makeText(activity?.baseContext,getString(R.string.prod_add),Toast.LENGTH_LONG).show()
-            }else{
+
+            var searchStock = ApplicationApp.instance.helper?.findStock(stock.codprod, true)
+
+            if(searchStock?.size != 0){
                 ApplicationApp.instance.helper?.updateStock(stock)
                 Toast.makeText(activity?.baseContext,getString(R.string.prod_att),Toast.LENGTH_LONG).show()
+            }else{
+                Toast.makeText(activity?.baseContext,"Produto não cadastro",Toast.LENGTH_LONG).show()
             }
 
             var intent = Intent(view.context, MainActivity::class.java)
