@@ -18,19 +18,27 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
 ) {
 
     companion object {
-        val VERSION: Int = 8
+        val VERSION: Int = 9
         val DB_NAME = "products_management.db"
         val DB_PRAGMA_FOREIGN_KEY = "PRAGMA FOREIGN_KEYS = ON;"
 
         //TABLES
         val TABLE_PRODUCTS_NAME = "products"
         val TABLE_STOCK_NAME = "stock"
+        val TABLE_LOGMOV_NAME = "logmov"
+
+        //TRIGGERS NAME
+        val TRG_MOV_INSERT_NAME = "TRG_LOGMOV_INSERT"
+        val TRG_MOV_UPDATE_NAME = "TRG_LOGMOV_UPDATE"
 
         //COLLUM
         val COLLUM_CODPROD = "codprod"
         val COLLUM_NAME_PROD = "name"
         val COLLUM_QTDE = "qtde"
         val COLLUM_DATE = "date"
+        val COLLUM_OPER = "oper"
+        val COLLUM_QTDE_BEFORE = "qtdbef"
+        val COLLUM_QTDE_AFTER = "qtdaft"
     }
 
     //CREATE
@@ -48,25 +56,80 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
             "FOREIGN KEY ($COLLUM_CODPROD) REFERENCES $TABLE_PRODUCTS_NAME($COLLUM_CODPROD)" +
             ")"
 
+    val TABLE_LOGMOV_CREATE = "" +
+            "CREATE TABLE IF NOT EXISTS $TABLE_LOGMOV_NAME (" +
+            "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "$COLLUM_OPER TEXT NOT NULL," +
+            "$COLLUM_CODPROD INTEGER NOT NULL," +
+            "$COLLUM_QTDE_BEFORE REAL NOT NULL," +
+            "$COLLUM_QTDE_AFTER REAL NOT NULL," +
+            "$COLLUM_DATE TEXT NOT NULL)"
+
     //DROP
     val TABLE_PRODUTS_DROP = "DROP TABLE IF EXISTS $TABLE_PRODUCTS_NAME"
     val TABLE_STOCK_DROP = "DROP TABLE IF EXISTS $TABLE_STOCK_NAME"
+    val TABLE_LOGMOV_DROP = "DROP TABLE IF EXISTS $TABLE_LOGMOV_NAME"
+
+    //TRIGGER
+    val TRG_LOGMOV_INSERT = "" +
+            "CREATE TRIGGER IF NOT EXISTS $TRG_MOV_INSERT_NAME " +
+            "AFTER INSERT ON $TABLE_STOCK_NAME " +
+            "" +
+            "BEGIN " +
+            "INSERT INTO $TABLE_LOGMOV_NAME (" +
+            "$COLLUM_OPER," +
+            "$COLLUM_CODPROD," +
+            "$COLLUM_QTDE_BEFORE," +
+            "$COLLUM_QTDE_AFTER," +
+            "$COLLUM_DATE" +
+            ") VALUES (" +
+            "'E'," +
+            "NEW.$COLLUM_CODPROD," +
+            "0," +
+            "NEW.$COLLUM_QTDE," +
+            "DATETIME('NOW')" +
+            ");" +
+            "END;"
+
+    val TRG_LOGMOV_UPDATE = "" +
+            "CREATE TRIGGER IF NOT EXISTS $TRG_MOV_UPDATE_NAME " +
+            "BEFORE UPDATE ON $TABLE_STOCK_NAME " +
+            "" +
+            "BEGIN " +
+            "INSERT INTO $TABLE_LOGMOV_NAME (" +
+            "$COLLUM_OPER," +
+            "$COLLUM_CODPROD," +
+            "$COLLUM_QTDE_BEFORE," +
+            "$COLLUM_QTDE_AFTER," +
+            "$COLLUM_DATE" +
+            ") VALUES (" +
+            "CASE WHEN OLD.$COLLUM_QTDE > NEW.$COLLUM_QTDE THEN 'S' ELSE 'E' END," +
+            "OLD.$COLLUM_CODPROD," +
+            "OLD.$COLLUM_QTDE," +
+            "NEW.$COLLUM_QTDE," +
+            "DATETIME('NOW')" +
+            ");" +
+            "END;"
 
 
     override fun onCreate(db: SQLiteDatabase?) {
         db?.execSQL(TABLE_PRODUTCS_CREATE)
         db?.execSQL(TABLE_STOCK_CREATE)
+        db?.execSQL(TABLE_LOGMOV_CREATE)
     }
 
     override fun onOpen(db: SQLiteDatabase?) {
         super.onOpen(db)
         db?.execSQL(DB_PRAGMA_FOREIGN_KEY)
+        db?.execSQL(TRG_LOGMOV_INSERT)
+        db?.execSQL(TRG_LOGMOV_UPDATE)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         if (oldVersion != newVersion) {
             db?.execSQL(TABLE_PRODUTS_DROP)
             db?.execSQL(TABLE_STOCK_DROP)
+            db?.execSQL(TABLE_LOGMOV_DROP)
         }
         onCreate(db)
     }
