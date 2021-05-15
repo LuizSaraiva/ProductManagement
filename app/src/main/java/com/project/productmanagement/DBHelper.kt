@@ -232,4 +232,27 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
         }
         return listStock
     }
+
+    fun updateStock(stock: Stock){
+
+        val itemStock = findStock(stock.codprod)
+        val stockBef = itemStock[0].qtde
+        val stockNew = stockBef + stock.qtde
+        val db = writableDatabase
+
+        val where = "$COLLUM_CODPROD = ?"
+        val args = arrayOf<String>("${stock.codprod}")
+
+        try {
+            val content = ContentValues()
+            content.put(COLLUM_QTDE,stockNew)
+            content.put(COLLUM_DATE,stock.date)
+            db.update(TABLE_STOCK_NAME,content,where,args)
+        }catch (ex: Exception){
+            ex.printStackTrace()
+        }
+        finally {
+            db.close()
+        }
+    }
 }

@@ -47,7 +47,8 @@ class FragmentEntry : Fragment() {
                 ApplicationApp.instance.helper?.insertStock(stock)
                 Toast.makeText(activity?.baseContext,getString(R.string.prod_add),Toast.LENGTH_LONG).show()
             }else{
-                Toast.makeText(activity?.baseContext,getString(R.string.prod_exists),Toast.LENGTH_LONG).show()
+                ApplicationApp.instance.helper?.updateStock(stock)
+                Toast.makeText(activity?.baseContext,getString(R.string.prod_att),Toast.LENGTH_LONG).show()
             }
 
             var intent = Intent(view.context, MainActivity::class.java)
