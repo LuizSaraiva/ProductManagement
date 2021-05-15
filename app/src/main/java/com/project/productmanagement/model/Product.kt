@@ -1,6 +1,6 @@
 package com.project.productmanagement.model
 
-data class Product(
-    val codprod: Int,
-    val name: String
+open class Product(
+    open val codprod: Int,
+    open val name: String?
 )

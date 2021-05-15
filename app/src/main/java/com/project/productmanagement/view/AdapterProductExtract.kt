@@ -27,7 +27,7 @@ class AdapterProductExtract(
             productCode.text = stock.codprod.toString()
             qt.text = stock.qtde.toString()
             price.text = stock.punit.toString()
-            desc.text = stock.desc
+            desc.text = stock.name
         }
     }
 

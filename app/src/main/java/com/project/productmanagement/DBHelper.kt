@@ -17,7 +17,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
 ) {
 
     companion object {
-        val VERSION: Int = 11
+        val VERSION: Int = 12
         val DB_NAME = "products_management.db"
         val DB_PRAGMA_FOREIGN_KEY = "PRAGMA FOREIGN_KEYS = ON;"
 
@@ -210,10 +210,12 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
         val query: String
 
         if (findId) {
-            query = "SELECT $TABLE_PRODUCTS_NAME.NAME, $TABLE_STOCK_NAME.* " +
+            query = "SELECT " +
+                    "$TABLE_PRODUCTS_NAME.NAME, " +
+                    "$TABLE_STOCK_NAME.* " +
                     "FROM $TABLE_STOCK_NAME , $TABLE_PRODUCTS_NAME " +
                     "WHERE $TABLE_PRODUCTS_NAME.$COLLUM_CODPROD = $TABLE_STOCK_NAME.$COLLUM_CODPROD " +
-                    "AND $COLLUM_CODPROD = ?"
+                    "AND $TABLE_STOCK_NAME.$COLLUM_CODPROD = ?"
             args = arrayOf("$codprod")
         } else {
             query = "SELECT $TABLE_PRODUCTS_NAME.NAME, $TABLE_STOCK_NAME.* " +
