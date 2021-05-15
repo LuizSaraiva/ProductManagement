@@ -39,6 +39,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
         val COLLUM_OPER = "oper"
         val COLLUM_QTDE_BEFORE = "qtdbef"
         val COLLUM_QTDE_AFTER = "qtdaft"
+        val COLLUM_NAME = "name"
     }
 
     //CREATE
@@ -209,10 +210,15 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
         val query: String
 
         if (findId) {
-            query = "SELECT * FROM $TABLE_STOCK_NAME WHERE $COLLUM_CODPROD = ?"
+            query = "SELECT $TABLE_PRODUCTS_NAME.NAME, $TABLE_STOCK_NAME.* " +
+                    "FROM $TABLE_STOCK_NAME , $TABLE_PRODUCTS_NAME " +
+                    "WHERE $TABLE_PRODUCTS_NAME.$COLLUM_CODPROD = $TABLE_STOCK_NAME.$COLLUM_CODPROD " +
+                    "AND $COLLUM_CODPROD = ?"
             args = arrayOf("$codprod")
         } else {
-            query = "SELECT * FROM $TABLE_STOCK_NAME"
+            query = "SELECT $TABLE_PRODUCTS_NAME.NAME, $TABLE_STOCK_NAME.* " +
+                    "FROM $TABLE_STOCK_NAME , $TABLE_PRODUCTS_NAME " +
+                    "WHERE $TABLE_PRODUCTS_NAME.$COLLUM_CODPROD = $TABLE_STOCK_NAME.$COLLUM_CODPROD "
         }
 
         try {
@@ -227,6 +233,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
 
                 var stock = Stock(
                     cursor.getInt(cursor.getColumnIndex(COLLUM_CODPROD)),
+                    cursor.getString(cursor.getColumnIndex(COLLUM_NAME)),
                     cursor.getDouble(cursor.getColumnIndex(COLLUM_QTDE)),
                     cursor.getString(cursor.getColumnIndex(COLLUM_DATE)),
                     0.0

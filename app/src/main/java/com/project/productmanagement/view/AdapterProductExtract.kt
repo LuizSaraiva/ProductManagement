@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.project.productmanagement.R
 import com.project.productmanagement.model.Stock
-import org.w3c.dom.Text
 
 class AdapterProductExtract(
     val context: Context,
@@ -28,6 +27,7 @@ class AdapterProductExtract(
             productCode.text = stock.codprod.toString()
             qt.text = stock.qtde.toString()
             price.text = stock.punit.toString()
+            desc.text = stock.desc
         }
     }
 
@@ -39,5 +39,6 @@ class ViewHolderProductExtract(itemView: View) : RecyclerView.ViewHolder(itemVie
     val productCode = itemView.findViewById<TextView>(R.id.item_product_code)
     val qt = itemView.findViewById<TextView>(R.id.item_qt)
     val price = itemView.findViewById<TextView>(R.id.item_price)
+    val desc = itemView.findViewById<TextView>(R.id.item_desc_prod)
 }
 

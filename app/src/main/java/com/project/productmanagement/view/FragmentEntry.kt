@@ -41,7 +41,7 @@ class FragmentEntry : Fragment() {
 
             val dateInsert = dateFormat.format(date)
 
-            var stock: Stock = Stock(codprodInsert, qtdeInsert, dateInsert, 0.0)
+            var stock: Stock = Stock(codprodInsert, null,qtdeInsert, dateInsert, 0.0)
 
 
 
