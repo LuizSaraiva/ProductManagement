@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.project.productmanagement.model.LogProd
 import com.project.productmanagement.model.Product
 import com.project.productmanagement.model.Stock
 import java.sql.SQLException
@@ -269,5 +270,34 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
         } finally {
             db.close()
         }
+    }
+
+    fun findLog(): List<LogProd> {
+        val db = readableDatabase
+        val listLog = mutableListOf<LogProd>()
+
+        val query = "SELECT * FROM $TABLE_LOGMOV_NAME"
+
+        try {
+            val cursor = db.rawQuery(query, null, null)
+
+            while (cursor.moveToNext()) {
+
+                val logProd = LogProd(
+                    cursor.getInt(cursor.getColumnIndex(COLLUM_CODPROD)),
+                    cursor.getString(cursor.getColumnIndex(COLLUM_OPER)),
+                    cursor.getDouble(cursor.getColumnIndex(COLLUM_QTDE_BEFORE)),
+                    cursor.getDouble(cursor.getColumnIndex(COLLUM_QTDE_AFTER)),
+                    cursor.getString(cursor.getColumnIndex(COLLUM_DATE))
+                )
+
+                listLog.add(logProd)
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        } finally {
+            db.close()
+        }
+        return listLog
     }
 }

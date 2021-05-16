@@ -9,4 +9,8 @@
         android:id="@+id/item_product_extract"
         android:title="Product extract"/>
 
+    <item
+        android:id="@+id/item_log"
+        android:title="LOG"/>
+
 </menu>

@@ -7,10 +7,12 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.navigation.NavigationView
 import com.project.productmanagement.model.Product
 import com.project.productmanagement.view.FragmentEntry
+import com.project.productmanagement.view.FragmentLog
 import com.project.productmanagement.view.FragmentProductExtract
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -22,6 +24,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     lateinit var fragEntry: FragmentEntry
     lateinit var fragProductExtract: FragmentProductExtract
+    lateinit var fragLog: FragmentLog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +74,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.frame, fragProductExtract)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .commit()
+            }
+
+            R.id.item_log ->{
+                fragLog = FragmentLog()
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.frame, fragLog)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit()
             }
