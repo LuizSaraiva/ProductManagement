@@ -252,7 +252,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(
 
     fun updateStock(stock: Stock) {
 
-        val itemStock = findStock(stock.codprod)
+        val itemStock = findStock(stock.codprod,true)
         val stockBef = itemStock[0].qtde
         val stockNew = stockBef + stock.qtde
         val db = writableDatabase
