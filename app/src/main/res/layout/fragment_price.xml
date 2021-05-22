@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:background="#CCC"
+    tools:context=".view.FragmentPrice">
+
+    <TextView
+        android:id="@+id/tx_prod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Product:"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/edt_codprod"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@id/tx_prod"
+        app:layout_constraintTop_toBottomOf="@id/tx_prod"
+        tools:text="12345" />
+
+    <TextView
+        android:id="@+id/item_desc_prod"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@id/edt_codprod"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/edt_codprod"
+        app:layout_constraintTop_toTopOf="@id/edt_codprod"
+        tools:text="Test desc" />
+
+    <TextView
+        android:id="@+id/tx_qt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Qt:"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edt_codprod" />
+
+    <TextView
+        android:id="@+id/item_qt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@id/tx_qt"
+        app:layout_constraintTop_toBottomOf="@id/edt_codprod"
+        tools:text="10" />
+
+    <TextView
+        android:id="@+id/tx_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:text="Price:"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@id/tx_qt"
+        app:layout_constraintEnd_toStartOf="@id/ed_price"
+        app:layout_constraintTop_toTopOf="@id/tx_qt" />
+
+    <EditText
+        android:id="@+id/ed_price"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        app:layout_constraintBottom_toBottomOf="@id/tx_price"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tx_price" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tx_qt">
+
+        <Button
+            android:id="@+id/btnSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:text="Search" />
+
+        <Button
+            android:id="@+id/btnOk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:text="OK" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
