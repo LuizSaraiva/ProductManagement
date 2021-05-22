@@ -13,6 +13,7 @@ import com.google.android.material.navigation.NavigationView
 import com.project.productmanagement.model.Product
 import com.project.productmanagement.view.FragmentEntry
 import com.project.productmanagement.view.FragmentLog
+import com.project.productmanagement.view.FragmentPrice
 import com.project.productmanagement.view.FragmentProductExtract
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var fragEntry: FragmentEntry
     lateinit var fragProductExtract: FragmentProductExtract
     lateinit var fragLog: FragmentLog
+    lateinit var fragPrice:FragmentPrice
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +85,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.frame, fragLog)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .commit()
+            }
+
+            R.id.item_price ->{
+                fragPrice = FragmentPrice()
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.frame, fragPrice)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit()
             }

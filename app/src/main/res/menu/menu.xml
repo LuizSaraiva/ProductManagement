@@ -6,6 +6,10 @@
         android:title="Entry" />
 
     <item
+        android:id="@+id/item_price"
+        android:title="Price"/>
+
+    <item
         android:id="@+id/item_product_extract"
         android:title="Product extract"/>
 
