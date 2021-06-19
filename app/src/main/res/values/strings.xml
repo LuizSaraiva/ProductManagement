@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ProductManagement</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="prod_add">Product Add</string>
+    <string name="prod_att">Product Att</string>
+    <string name="prod_exists">Product not add becase products exists</string>
 </resources>
